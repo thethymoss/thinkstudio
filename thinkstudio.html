@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThinkStudio</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #000000, #1e90ff); /* Siyah ve mavi geçiş */
+            color: #fff;
+        }
+        header {
+            background: #000000;
+            color: #1e90ff;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+        }
+        .logo {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .logo img {
+            width: 150px;
+            height: auto;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #1a1a1a;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            color: #ddd;
+        }
+        .chat-box {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #262626;
+        }
+        .message {
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .message.user {
+            background: #1e90ff;
+            color: white;
+            align-self: flex-end;
+        }
+        .message.tsai {
+            background: #444;
+            color: #ddd;
+            align-self: flex-start;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        .input-group input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background: #333;
+            color: white;
+        }
+        .input-group button {
+            padding: 10px 20px;
+            background: #1e90ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .input-group button:hover {
+            background: #155a9b;
+        }
+        .today-in-history {
+            margin-top: 20px;
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <header>ThinkStudio</header>
+    <div class="logo">
+        <!-- Doğru ThinkStudio logosu -->
+        <img src="https://your-image-hosting-link.com/thinkstudio-logo.png" alt="ThinkStudio Logo">
+    </div>
+    <div class="container">
+        <div class="username">
+            <label for="usernameInput">Kullanıcı Adınız: </label>
+            <input type="text" id="usernameInput" placeholder="Bir kullanıcı adı seçin">
+            <button onclick="setUsername()">Kaydet</button>
+        </div>
+        <hr>
+        <div class="chat-box" id="chatBox">
+            <!-- Mesajlar buraya eklenecek -->
+        </div>
+        <div class="input-group">
+            <input type="text" id="messageInput" placeholder="Mesajınızı yazın...">
+            <button onclick="sendMessage()">Gönder</button>
+        </div>
+        <div class="today-in-history" id="historySection">
+            <h3>Tarihte Bugün</h3>
+            <ul>
+                <li>1941 - Pearl Harbor saldırısı gerçekleşti.</li>
+                <li>1988 - Ermenistan'da Spitak depremi meydana geldi.</li>
+                <li>2003 - Çin, ilk ay misyonunu başarıyla tamamladı.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let username = "Kullanıcı";
+
+        const tsaiResponses = [
+            { keyword: "merhaba", responses: ["Merhaba! Nasılsın?", "Selam! Bugün harika bir gün."] },
+            { keyword: "nasılsın", responses: ["Ben yapay zekayım, her zaman harikayım! Ya sen?", "Gayet iyiyim, teşekkürler!"] },
+            { keyword: "teşekkür", responses: ["Rica ederim!", "Her zaman yardımcı olmaya hazırım."] },
+            { keyword: "film", responses: ["Film izlemeyi sever misin? Önerim: Interstellar.", "Bir film önerisi: Inception!"] },
+            { keyword: "kitap", responses: ["Son okuduğun kitap neydi?", "Kitap okumak ruhu besler, son zamanlarda ne okuyorsun?"] },
+        ];
+
+        function setUsername() {
+            const input = document.getElementById("usernameInput").value.trim();
+            if (input) {
+                username = input;
+                alert("Kullanıcı adınız değiştirildi: " + username);
+            } else {
+                alert("Lütfen geçerli bir kullanıcı adı girin.");
+            }
+        }
+
+        function sendMessage() {
+            const chatBox = document.getElementById("chatBox");
+            const messageInput = document.getElementById("messageInput");
+            const messageText = messageInput.value.trim();
+
+            if (messageText) {
+                // Kullanıcının mesajını ekle
+                const userMessageDiv = document.createElement("div");
+                userMessageDiv.classList.add("message", "user");
+                userMessageDiv.textContent = `${username}: ${messageText}`;
+                chatBox.appendChild(userMessageDiv);
+
+                // TSai'nin yanıtını ekle
+                setTimeout(() => {
+                    const tsaiMessageDiv = document.createElement("div");
+                    tsaiMessageDiv.classList.add("message", "tsai");
+                    tsaiMessageDiv.textContent = `TSai: ${generateResponse(messageText)}`;
+                    chatBox.appendChild(tsaiMessageDiv);
+
+                    // Mesaj kutusunu en alta kaydır
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }, 1000);
+
+                // Girdi alanını temizle
+                messageInput.value = "";
+            }
+        }
+
+        function generateResponse(userInput) {
+            userInput = userInput.toLowerCase();
+            for (const entry of tsaiResponses) {
+                if (userInput.includes(entry.keyword)) {
+                    const possibleResponses = entry.responses;
+                    return possibleResponses[Math.floor(Math.random() * possibleResponses.length)];
+                }
+            }
+            return "Bu ilginç görünüyor! Daha fazlasını paylaşmak ister misin?";
+        }
+    </script>
+</body>
+</html>
